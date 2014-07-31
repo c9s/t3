@@ -66,7 +66,6 @@ void inc_a_500(ThreadTask *task, void * data) {
 
 void inc_a(ThreadTask *task, void * data) {
     MutexData * d = (MutexData*) data;
-    usleep(100);
     d->Inc();
     task->Done();
 }
