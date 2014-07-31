@@ -1,0 +1,7 @@
+enable_testing()
+find_package(GTest REQUIRED)
+set(PROJECT_TEST_NAME "${PROJECT_NAME}_test")
+include_directories(${GTEST_INCLUDE_DIRS} ${INCLUDE_DIRECTORIES})
+add_executable(thread_pool_test thread_pool_test.cc )
+target_link_libraries(thread_pool_test ${PROJECT_NAME_STR} thread_pool pthread ${GTEST_BOTH_LIBRARIES})
+add_test(thread_pool_test thread_pool_test)
