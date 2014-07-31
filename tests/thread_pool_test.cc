@@ -56,9 +56,7 @@ void parent_a(ThreadTask *task, void * data) {
 void inc_a_500(ThreadTask *task, void * data) {
     MutexData * d = (MutexData*) data;
     for (int i = 0 ; i < 500 ; i++ ) {
-        d->mutex.lock();
         d->Inc();
-        d->mutex.unlock();
     }
     task->Done();
 }
