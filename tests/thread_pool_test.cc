@@ -162,7 +162,7 @@ TEST(ThreadPoolTest, TestGlobalThread) {
         global_pool.AddTask(&parent);
         parent.Wait();
     }
-    EXPECT_EQ(a, 3); // parent + 2 sub tasks
+    EXPECT_EQ(a, 3000); // parent + 2 sub tasks
 }
 
 
