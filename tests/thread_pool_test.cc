@@ -18,7 +18,10 @@ struct MutexData {
     MutexData(int * a) : a(a) { }
 
     void Inc() {
+        mutex.lock();
         *a = *a + 1;
+        usleep(10);
+        mutex.unlock();
     }
 };
 
@@ -63,7 +66,7 @@ void inc_a_500(ThreadTask *task, void * data) {
 
 void inc_a(ThreadTask *task, void * data) {
     MutexData * d = (MutexData*) data;
-    std::unique_lock<std::mutex> mlock(d->mutex);
+    usleep(100);
     d->Inc();
     task->Done();
 }
@@ -157,9 +160,11 @@ TEST(ThreadPoolTest, ThreadMoreTasks) {
 
 TEST(ThreadPoolTest, TestGlobalThread) {
     int a = 0;
-    ThreadTask parent(parent_a, &a);
-    global_pool.AddTask(&parent);
-    parent.Wait();
+    for (int x = 0; x < 1000 ; x++ ) {
+        ThreadTask parent(parent_a, &a);
+        global_pool.AddTask(&parent);
+        parent.Wait();
+    }
     EXPECT_EQ(a, 3); // parent + 2 sub tasks
 }
 
