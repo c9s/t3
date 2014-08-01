@@ -49,12 +49,14 @@ void parent_a(ThreadTask *task, void * data) {
 
     std::cout << "Waiting sub 2" << std::endl;
     task2.Wait();
+    std::cout << "Done sub 2" << std::endl;
 
     std::cout << "Waiting sub 1" << std::endl;
     task1.Wait();
+    std::cout << "Done sub 1" << std::endl;
     // task1 is not finished yet.
 
-    std::cout << "parent_a done" << std::endl;
+    usleep(1000);
     task->Done();
 }
 
@@ -168,6 +170,7 @@ TEST(ThreadPoolTest, TestParentThreadTask) {
         global_pool.AddTask(&parent1);
         std::cout << "Waiting parent 1" << std::endl;
         parent1.Wait();
+        std::cout << "Done parent 1" << std::endl;
     }
 }
 
