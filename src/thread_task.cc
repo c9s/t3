@@ -28,9 +28,11 @@ void ThreadTask::Run()
 }
 
 void ThreadTask::Done(bool f) {
-    std::unique_lock<std::mutex> mlock(mutex);
-    done_ = true;
-    cond.notify_all();
+    {
+        std::unique_lock<std::mutex> mlock(mutex);
+        done_ = true;
+    }
+    cond.notify_one();
 }
 
 void ThreadTask::Wait()

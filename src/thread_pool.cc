@@ -73,17 +73,19 @@ void ThreadPool::ExecuteTask()
         task = tasks_.front();
         tasks_.pop_front();
         mlock.unlock();
+
+        task->set_pool(this);
         task->Run();
   }
 }
 
 void ThreadPool::AddTask(ThreadTask* task)
 {
-    std::unique_lock<std::mutex> mlock(mutex_);
-    // TODO: put a limit on how many tasks can be added at most
-    tasks_.push_back(task);
+    {
+        std::unique_lock<std::mutex> mlock(mutex_);
+        // TODO: put a limit on how many tasks can be added at most
+        tasks_.push_back(task);
+    }
     cv_.notify_one(); // wake up one thread that is waiting for a task to be available
 }
-
-ThreadPool pool(2);
 

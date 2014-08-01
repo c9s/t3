@@ -10,18 +10,14 @@
 #include <gperftools/profiler.h>
 #include "gtest/gtest.h"
 
-ThreadPool global_pool(4);
-
 struct MutexData { 
     int * a;
     std::mutex mutex;
     MutexData(int * a) : a(a) { }
 
     void Inc() {
-        mutex.lock();
+        std::lock_guard<std::mutex> lock(mutex);
         *a = *a + 1;
-        usleep(10);
-        mutex.unlock();
     }
 };
 
@@ -34,22 +30,25 @@ void inc_a_500(ThreadTask *task, void * data);
 void parent_a(ThreadTask *task, void * data);
 
 
+void sub_a(ThreadTask *task, void * data) {
+    MutexData * d = (MutexData*) data;
+    d->Inc();
+    task->Done();
+}
+
 void parent_a(ThreadTask *task, void * data) {
-    int * a = (int*) data;
+    MutexData * tdata = (MutexData*) data;
 
-    *a = *a + 1;
+    // tdata->Inc();
 
-    MutexData tdata(a);
-
-    ThreadTask task1(inc_a, &tdata);
-    ThreadTask task2(inc_a, &tdata);
-
-    global_pool.AddTask(&task1);
-    global_pool.AddTask(&task2);
-
+    ThreadTask task1(sub_a, &tdata);
+    task->pool()->AddTask(&task1);
     task1.Wait();
-    task2.Wait();
-
+    /*
+    ThreadTask task2(inc_a, &tdata);
+    // task->pool_->AddTask(&task2);
+    // task2.Wait();
+    */
     task->Done();
 }
 
@@ -155,14 +154,16 @@ TEST(ThreadPoolTest, ThreadMoreTasks) {
 
 
 
-TEST(ThreadPoolTest, TestGlobalThread) {
+TEST(ThreadPoolTest, TestParentThreadTask) {
     int a = 0;
-    for (int x = 0; x < 1000 ; x++ ) {
-        ThreadTask parent(parent_a, &a);
-        global_pool.AddTask(&parent);
-        parent.Wait();
-    }
-    EXPECT_EQ(a, 3000); // parent + 2 sub tasks
+    ThreadPool pool(4);
+    // for (int x = 0; x < 1000 ; x++ ) {
+        MutexData data(&a);
+        ThreadTask parent1(parent_a, &data);
+        pool.AddTask(&parent1);
+        parent1.Wait();
+    // }
+    // EXPECT_EQ(a, 5810); // parent + 2 sub tasks
 }
 
 

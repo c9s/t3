@@ -51,6 +51,4 @@ private:
     volatile int state_;
 };
 
-extern ThreadPool pool;
-
 #endif /* _H_THREADPOOL */
