@@ -21,6 +21,8 @@ struct MutexData {
     }
 };
 
+ThreadPool global_pool(4);
+
 TEST(ThreadPool, TestThreadConstructorAndDestructor) {
     ThreadPool pool(4);
 }
@@ -39,16 +41,20 @@ void sub_a(ThreadTask *task, void * data) {
 void parent_a(ThreadTask *task, void * data) {
     MutexData * tdata = (MutexData*) data;
 
-    // tdata->Inc();
+    ThreadTask task1(sub_a, tdata);
+    ThreadTask task2(sub_a, tdata);
 
-    ThreadTask task1(sub_a, &tdata);
     task->pool()->AddTask(&task1);
+    task->pool()->AddTask(&task2);
+
+    std::cout << "Waiting sub 2" << std::endl;
+    task2.Wait();
+
+    std::cout << "Waiting sub 1" << std::endl;
     task1.Wait();
-    /*
-    ThreadTask task2(inc_a, &tdata);
-    // task->pool_->AddTask(&task2);
-    // task2.Wait();
-    */
+    // task1 is not finished yet.
+
+    std::cout << "parent_a done" << std::endl;
     task->Done();
 }
 
@@ -156,13 +162,14 @@ TEST(ThreadPoolTest, ThreadMoreTasks) {
 
 TEST(ThreadPoolTest, TestParentThreadTask) {
     int a = 0;
-    ThreadPool pool(4);
-    // for (int x = 0; x < 1000 ; x++ ) {
+    for (int x = 0; x < 1000 ; x++ ) {
+        // std::cout << x << std::endl;
         MutexData data(&a);
         ThreadTask parent1(parent_a, &data);
-        pool.AddTask(&parent1);
+        global_pool.AddTask(&parent1);
+        std::cout << "Waiting parent 1" << std::endl;
         parent1.Wait();
-    // }
+    }
     // EXPECT_EQ(a, 5810); // parent + 2 sub tasks
 }
 

@@ -16,9 +16,9 @@ class ThreadPool;
 
 class ThreadTask
 {
-    bool done_ = false;
 
 public:
+    bool done_ = false;
     std::mutex mutex;
     std::condition_variable cond;
 

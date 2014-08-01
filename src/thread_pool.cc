@@ -65,7 +65,6 @@ void ThreadPool::ExecuteTask()
         }
 
         if (state_ == STOPPED) {
-            mlock.unlock();
             return;
         }
 
