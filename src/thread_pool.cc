@@ -90,10 +90,10 @@ void ThreadPool::ExecuteTask()
 
         if (task) {
             std::cout << "Executing task" << std::endl;
-            // we lock task mutex before starting it.
-            std::unique_lock<std::mutex> taskcv_lock(task->mutex);
             task->set_pool(this);
             task->Run();
+            // we lock task mutex before starting it.
+            std::unique_lock<std::mutex> taskcv_lock(task->mutex);
             task->set_done(true);
             taskcv_lock.unlock();
             task->cond.notify_all();
