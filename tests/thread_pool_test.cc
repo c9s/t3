@@ -118,13 +118,13 @@ TEST(ThreadPoolTest, Thread2TaskMutexWait) {
 
 
 TEST(ThreadPoolTest, Thread2TaskMutexRace) {
-    ThreadPool pool(6);
+    ThreadPool pool(3);
 
     int a = 0;
     MutexData data(&a);
 
     std::vector<ThreadTask*> tasks;
-    for (int i = 0 ; i < 10 ; i++ ) {
+    for (int i = 0 ; i < 100 ; i++ ) {
         auto task = new ThreadTask(inc_a_500, &data);
         tasks.push_back(task);
         pool.AddTask(task);
@@ -132,7 +132,7 @@ TEST(ThreadPoolTest, Thread2TaskMutexRace) {
     for (std::vector<ThreadTask*>::iterator it = tasks.begin(); it != tasks.end() ; it++ ) {
         (*it)->Wait();
     }
-    EXPECT_EQ(a, 500 * 10);
+    EXPECT_EQ(a, 500 * 100);
 }
 
 
@@ -163,14 +163,12 @@ TEST(ThreadPoolTest, ThreadMoreTasks) {
 TEST(ThreadPoolTest, TestParentThreadTask) {
     int a = 0;
     for (int x = 0; x < 1000 ; x++ ) {
-        // std::cout << x << std::endl;
         MutexData data(&a);
         ThreadTask parent1(parent_a, &data);
         global_pool.AddTask(&parent1);
         std::cout << "Waiting parent 1" << std::endl;
         parent1.Wait();
     }
-    // EXPECT_EQ(a, 5810); // parent + 2 sub tasks
 }
 
 
