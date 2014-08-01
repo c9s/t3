@@ -33,9 +33,17 @@ void parent_a(ThreadTask *task, void * data);
 
 
 void sub_a(ThreadTask *task, void * data) {
+    /*
+    std::unique_lock<std::mutex> lock(task->mutex);
+    */
     MutexData * d = (MutexData*) data;
     d->Inc();
-    task->Done();
+
+    /*
+    task->done_ = true;
+    lock.unlock();
+    task->cond.notify_all();
+    */
 }
 
 void parent_a(ThreadTask *task, void * data) {
@@ -48,16 +56,27 @@ void parent_a(ThreadTask *task, void * data) {
     task->pool()->AddTask(&task2);
 
     std::cout << "Waiting sub 2" << std::endl;
+    /*
+    std::unique_lock<std::mutex> lock2(task2.mutex);
+    while (!task2.done_) task2.cond.wait(lock2);
+    lock2.unlock();
+    task2.cond.notify_one();
+    */
     task2.Wait();
     std::cout << "Done sub 2" << std::endl;
 
+
+
+
     std::cout << "Waiting sub 1" << std::endl;
+    /*
+    std::unique_lock<std::mutex> lock1(task1.mutex);
+    while (!task1.done_) task1.cond.wait(lock1);
+    lock1.unlock();
+    task1.cond.notify_one();
+    */
     task1.Wait();
     std::cout << "Done sub 1" << std::endl;
-    // task1 is not finished yet.
-
-    usleep(1000);
-    task->Done();
 }
 
 void inc_a_500(ThreadTask *task, void * data) {
@@ -65,20 +84,19 @@ void inc_a_500(ThreadTask *task, void * data) {
     for (int i = 0 ; i < 500 ; i++ ) {
         d->Inc();
     }
-    task->Done();
 }
 
 
 void inc_a(ThreadTask *task, void * data) {
     MutexData * d = (MutexData*) data;
     d->Inc();
-    task->Done();
+    // task->Done();
 }
 
 void set_a_1(ThreadTask *task, void * data) { 
     int * a = (int*) data;
     *a = 1;
-    task->Done();
+    // task->Done();
 }
 
 TEST(ThreadPoolTest, ThreadTaskWait) {
@@ -163,14 +181,27 @@ TEST(ThreadPoolTest, ThreadMoreTasks) {
 
 
 TEST(ThreadPoolTest, TestParentThreadTask) {
+    ThreadPool pool(4);
+
     int a = 0;
     for (int x = 0; x < 1000 ; x++ ) {
         MutexData data(&a);
         ThreadTask parent1(parent_a, &data);
-        global_pool.AddTask(&parent1);
-        std::cout << "Waiting parent 1" << std::endl;
+
+        std::cout << "===> Start parent " << x << std::endl;
+        pool.AddTask(&parent1); // it's not locking the done mutex
+        std::cout << "===> Waiting parent 1" << x << std::endl;
         parent1.Wait();
+        std::cout << "===> Done parent 1" << x << std::endl;
+
+        /*
+        std::unique_lock<std::mutex> lock1(parent1.mutex);
+        while (!parent1.done_) parent1.cond.wait(lock1);
         std::cout << "Done parent 1" << std::endl;
+        lock1.unlock();
+        parent1.cond.notify_one();
+        */
+
     }
 }
 

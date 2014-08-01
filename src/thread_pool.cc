@@ -1,4 +1,5 @@
 #include "thread_pool.h"
+#include <iostream>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -32,6 +33,13 @@ void ThreadPool::Initialize()
     for (int i = 0; i < pool_size_; i++) {
         auto t = new std::thread(ThreadHandler, this);
         threads_.push_back(t);
+        // we need to make sure that threads has entered the section to waiting the lock 
+    }
+
+    // Wait for all threads get started.
+    std::unique_lock<std::mutex> lock(mutex_);
+    while (started_workers_ < pool_size_) {
+        cv_.wait(lock);
     }
 }
 
@@ -59,6 +67,13 @@ void ThreadPool::ExecuteTask()
 {
     ThreadTask* task = NULL;
     while(true) {
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            started_workers_++;
+            lock.unlock();
+            cv_.notify_all(); // try waking up a bunch of threads that are still waiting
+        }
+
         std::unique_lock<std::mutex> mlock(mutex_);
         while ((state_ != STOPPED) && (tasks_.empty())) {
             cv_.wait(mlock);
@@ -73,9 +88,18 @@ void ThreadPool::ExecuteTask()
         tasks_.pop_front();
         mlock.unlock();
 
-        task->set_pool(this);
-        task->Run();
-  }
+        if (task) {
+            std::cout << "Executing task" << std::endl;
+            // we lock task mutex before starting it.
+            std::unique_lock<std::mutex> taskcv_lock(task->mutex);
+            task->set_pool(this);
+            task->Run();
+            task->set_done(true);
+            taskcv_lock.unlock();
+            task->cond.notify_all();
+            std::cout << "Finished task" << std::endl;
+        }
+    }
 }
 
 void ThreadPool::AddTask(ThreadTask* task)

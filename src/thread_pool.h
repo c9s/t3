@@ -18,6 +18,7 @@ class ThreadPool
 
 public:
 
+
     ThreadPool();
 
     ThreadPool(int pool_size);
@@ -33,6 +34,8 @@ public:
     void AddTask(ThreadTask* task);
 
 private:
+
+    int started_workers_ = 0;
 
     int pool_size_;
 

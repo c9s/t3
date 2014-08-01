@@ -22,6 +22,7 @@ public:
     std::mutex mutex;
     std::condition_variable cond;
 
+
     ThreadPool * pool_;
 
     //  ThreadTask(TCLass::* obj_fn_ptr); // pass an object method pointer
@@ -38,7 +39,7 @@ public:
     void Wait();
 
     // Set done_ flag to done
-    void Done(bool f = true);
+    void set_done(bool f = true);
 
     void Run();
 
