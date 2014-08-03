@@ -12,6 +12,8 @@
 #include <mutex>
 #include <condition_variable>
 
+namespace t3 {
+
 class ThreadPool;
 
 class ThreadTask
@@ -48,5 +50,6 @@ private:
     void * arguments_;
 };
 
+};
 
 #endif /* !THREAD_TASK_H */

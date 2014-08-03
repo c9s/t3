@@ -5,6 +5,8 @@
 #include <condition_variable>
 #include <errno.h>
 
+namespace t3 {
+
 ThreadPool::ThreadPool() : pool_size_(DEFAULT_POOL_SIZE) {
     Initialize();
 }
@@ -96,7 +98,7 @@ void ThreadPool::ExecuteTask()
             std::unique_lock<std::mutex> taskcv_lock(task->mutex);
             task->set_done(true);
             taskcv_lock.unlock();
-            task->cond.notify_all();
+            task->cond.notify_one();
             std::cout << "Finished task" << std::endl;
         }
     }
@@ -112,3 +114,4 @@ void ThreadPool::AddTask(ThreadTask* task)
     cv_.notify_one(); // wake up one thread that is waiting for a task to be available
 }
 
+};

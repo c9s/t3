@@ -4,10 +4,13 @@
  *
  * Distributed under terms of the MIT license.
  */
+#include <iostream>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include "thread_task.h"
+
+namespace t3 {
 
 ThreadTask::ThreadTask(void (*fn_ptr)(ThreadTask*, void*), void* arg) : function_(fn_ptr), arguments_(arg)
 {
@@ -33,17 +36,16 @@ void ThreadTask::set_done(bool f) {
 
 void ThreadTask::Wait()
 {
-    {
-        std::unique_lock<std::mutex> lock(mutex);
-        while (!done_) {
-            cond.wait(lock);
-        }
+    std::cout << "Wait.lock" << std::endl;
+    std::unique_lock<std::mutex> lock(mutex);
+    while (!done_) {
+        std::cout << "Wait.cond.wait" << std::endl;
+        cond.wait(lock);
     }
-    cond.notify_one();
 }
 
 
 
 
 
-
+};

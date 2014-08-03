@@ -9,6 +9,8 @@
 #include <condition_variable>
 #include "thread_task.h"
 
+namespace t3 {
+
 const int DEFAULT_POOL_SIZE = 10;
 const int STARTED = 0;
 const int STOPPED = 1;
@@ -52,6 +54,8 @@ private:
     std::deque<ThreadTask*> tasks_;
 
     volatile int state_;
+};
+
 };
 
 #endif /* _H_THREADPOOL */

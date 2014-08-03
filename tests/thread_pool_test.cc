@@ -10,14 +10,18 @@
 #include <gperftools/profiler.h>
 #include "gtest/gtest.h"
 
+using namespace t3;
+
 struct MutexData { 
     int * a;
     std::mutex mutex;
     MutexData(int * a) : a(a) { }
 
     void Inc() {
+        std::cout << "Lock a" << std::endl;
         std::lock_guard<std::mutex> lock(mutex);
         *a = *a + 1;
+        std::cout << "Unlock a" << std::endl;
     }
 };
 
@@ -38,12 +42,6 @@ void sub_a(ThreadTask *task, void * data) {
     */
     MutexData * d = (MutexData*) data;
     d->Inc();
-
-    /*
-    task->done_ = true;
-    lock.unlock();
-    task->cond.notify_all();
-    */
 }
 
 void parent_a(ThreadTask *task, void * data) {
@@ -55,28 +53,13 @@ void parent_a(ThreadTask *task, void * data) {
     task->pool()->AddTask(&task1);
     task->pool()->AddTask(&task2);
 
-    std::cout << "Waiting sub 2" << std::endl;
-    /*
-    std::unique_lock<std::mutex> lock2(task2.mutex);
-    while (!task2.done_) task2.cond.wait(lock2);
-    lock2.unlock();
-    task2.cond.notify_one();
-    */
-    task2.Wait();
-    std::cout << "Done sub 2" << std::endl;
-
-
-
-
     std::cout << "Waiting sub 1" << std::endl;
-    /*
-    std::unique_lock<std::mutex> lock1(task1.mutex);
-    while (!task1.done_) task1.cond.wait(lock1);
-    lock1.unlock();
-    task1.cond.notify_one();
-    */
     task1.Wait();
     std::cout << "Done sub 1" << std::endl;
+
+    std::cout << "Waiting sub 2" << std::endl;
+    task2.Wait();
+    std::cout << "Done sub 2" << std::endl;
 }
 
 void inc_a_500(ThreadTask *task, void * data) {
