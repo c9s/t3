@@ -14,6 +14,7 @@ namespace t3 {
 
 ThreadTask::ThreadTask(void (*fn_ptr)(ThreadTask*, void*), void* arg) : function_(fn_ptr), arguments_(arg)
 {
+
 }
 
 ThreadTask::~ThreadTask()
