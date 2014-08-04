@@ -68,14 +68,15 @@ void ThreadPool::Destroy()
 void ThreadPool::ExecuteTask()
 {
     ThreadTask* task = NULL;
-    while(true) {
-        {
-            std::unique_lock<std::mutex> lock(mutex_);
-            started_workers_++;
-            lock.unlock();
-            cv_.notify_all(); // try waking up a bunch of threads that are still waiting
-        }
 
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        started_workers_++;
+        lock.unlock();
+        cv_.notify_all(); // try waking up a bunch of threads that are still waiting
+    }
+
+    while(true) {
         std::unique_lock<std::mutex> mlock(mutex_);
         while ((state_ != STOPPED) && (tasks_.empty())) {
             cv_.wait(mlock);

@@ -73,13 +73,11 @@ void inc_a_500(ThreadTask *task, void * data) {
 void inc_a(ThreadTask *task, void * data) {
     MutexData * d = (MutexData*) data;
     d->Inc();
-    // task->Done();
 }
 
 void set_a_1(ThreadTask *task, void * data) { 
     int * a = (int*) data;
     *a = 1;
-    // task->Done();
 }
 
 TEST(ThreadPoolTest, ThreadTaskWait) {
