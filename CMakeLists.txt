@@ -30,7 +30,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_CXX_FLAGS "-std=c++0x -arch x86_64 -stdlib=libc++ -Wall -Wno-long-long -Wno-unused-value -Wno-overloaded-virtual")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set (CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-long-long -Wno-unused-value -Wno-overloaded-virtual")
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+endif()
 
 if(${CMAKE_BUILD_TYPE} MATCHES "Release")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
