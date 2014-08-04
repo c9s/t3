@@ -41,7 +41,7 @@ public:
     void Wait();
 
     // Set done_ flag to done
-    void set_done(bool f = true);
+    void Done(bool f = true);
 
     void Run();
 

@@ -1,2 +1,2 @@
-add_library(thread_pool thread_pool.cc thread_task.cc channel.cc)
-target_link_libraries(thread_pool pthread)
+add_library(t3 thread_pool.cc thread_task.cc channel.cc wait_group.cc)
+target_link_libraries(t3 pthread)

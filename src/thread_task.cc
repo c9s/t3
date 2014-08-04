@@ -31,8 +31,11 @@ void ThreadTask::Run()
     (*function_)(this, arguments_);
 }
 
-void ThreadTask::set_done(bool f) {
+void ThreadTask::Done(bool f) {
+    std::unique_lock<std::mutex> lock(mutex);
     done_ = f;
+    lock.unlock();
+    cond.notify_all();
 }
 
 void ThreadTask::Wait()

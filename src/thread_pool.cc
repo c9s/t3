@@ -91,15 +91,9 @@ void ThreadPool::ExecuteTask()
         mlock.unlock();
 
         if (task) {
-            std::cout << "Executing task" << std::endl;
             task->set_pool(this);
             task->Run();
-            // we lock task mutex before starting it.
-            std::unique_lock<std::mutex> taskcv_lock(task->mutex);
-            task->set_done(true);
-            taskcv_lock.unlock();
-            task->cond.notify_one();
-            std::cout << "Finished task" << std::endl;
+            task->Done();
         }
     }
 }
