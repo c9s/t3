@@ -16,8 +16,6 @@ SET(CMAKE_MODULE_PATH
 
 link_directories(${LINK_DIRECTORIES} /opt/local/lib /usr/lib)
 include_directories(. ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src /opt/local/include /usr/include)
-
-include_directories(${INCLUDE_DIRECTORIES} ${OPENCV_INCLUDE_DIR})
 # set (CMAKE_CXX_FLAGS "-std=c++0x -arch x86_64 -stdlib=libc++ -g3 -Wall -O0")
 
 # debug
