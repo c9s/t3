@@ -36,6 +36,8 @@ void parent_a(ThreadTask *task, void * data);
 void sub_a(ThreadTask *task, void * data) {
     MutexData * d = (MutexData*) data;
     d->Inc();
+    std::chrono::microseconds a{100,0};
+    std::this_thread::sleep_for(a);
 }
 
 void parent_a(ThreadTask *task, void * data) {
@@ -151,7 +153,7 @@ TEST(ThreadPoolTest, ThreadMoreTasks) {
 
 
 TEST(ThreadPoolTest, TestParentThreadTask) {
-    ThreadPool pool(4);
+    ThreadPool pool(2);
 
     int a = 0;
     for (int x = 0; x < 1000 ; x++ ) {
@@ -160,15 +162,6 @@ TEST(ThreadPoolTest, TestParentThreadTask) {
 
         pool.AddTask(&parent1); // it's not locking the done mutex
         parent1.Wait();
-
-        /*
-        std::unique_lock<std::mutex> lock1(parent1.mutex);
-        while (!parent1.done_) parent1.cond.wait(lock1);
-        std::cout << "Done parent 1" << std::endl;
-        lock1.unlock();
-        parent1.cond.notify_one();
-        */
-
     }
 }
 

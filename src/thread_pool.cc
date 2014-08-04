@@ -102,7 +102,7 @@ void ThreadPool::AddTask(ThreadTask* task)
 {
     std::unique_lock<std::mutex> mlock(mutex_);
     tasks_.push_back(task);
-    cv_.notify_one(); // wake up one thread that is waiting for a task to be available
+    cv_.notify_all(); // wake up one thread that is waiting for a task to be available
 }
 
 };
