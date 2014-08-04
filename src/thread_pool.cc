@@ -53,9 +53,9 @@ void ThreadPool::Destroy()
     // modified in a lock!
     mutex_.lock();
     state_ = STOPPED;
+    cv_.notify_all(); // notify all threads we are shttung down
     mutex_.unlock();
     // cout << "Broadcasting STOP signal to all threads..." << endl;
-    cv_.notify_all(); // notify all threads we are shttung down
 
     for (std::vector<std::thread*>::iterator it = threads_.begin(); it != threads_.end(); it++ ) {
         if ( (*it)->joinable()) {
@@ -100,11 +100,8 @@ void ThreadPool::ExecuteTask()
 
 void ThreadPool::AddTask(ThreadTask* task)
 {
-    {
-        std::unique_lock<std::mutex> mlock(mutex_);
-        // TODO: put a limit on how many tasks can be added at most
-        tasks_.push_back(task);
-    }
+    std::unique_lock<std::mutex> mlock(mutex_);
+    tasks_.push_back(task);
     cv_.notify_one(); // wake up one thread that is waiting for a task to be available
 }
 
