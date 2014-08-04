@@ -4,11 +4,10 @@
  *
  * Distributed under terms of the MIT license.
  */
-#include "thread_task.h"
-#include "thread_pool.h"
-
 #include <gperftools/profiler.h>
 #include "gtest/gtest.h"
+#include "thread_task.h"
+#include "thread_pool.h"
 
 using namespace t3;
 

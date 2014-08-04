@@ -15,7 +15,7 @@ SET(CMAKE_MODULE_PATH
     )
 
 link_directories(${LINK_DIRECTORIES} /opt/local/lib /usr/lib)
-include_directories(. ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src /opt/local/include /usr/include ${INCLUDE_DIRECTORIES})
+include_directories(. ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src /opt/local/include /usr/include)
 
 include_directories(${INCLUDE_DIRECTORIES} ${OPENCV_INCLUDE_DIR})
 # set (CMAKE_CXX_FLAGS "-std=c++0x -arch x86_64 -stdlib=libc++ -g3 -Wall -O0")
@@ -40,11 +40,11 @@ else()
 endif()
 enable_testing()
 
-set(GTEST_ROOT gtest-1.7.0)
+set(ENV{GTEST_ROOT} ${PROJECT_SOURCE_DIR}/gtest-1.7.0)
 # set(gtest_SOURCE_DIR gtest-1.7.0)
 # add_subdirectory(${gtest_SOURCE_DIR})
 # include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-
+add_subdirectory(gtest-1.7.0)
 add_subdirectory(src)
 add_subdirectory(tests)
 
