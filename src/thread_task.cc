@@ -34,16 +34,13 @@ void ThreadTask::Run()
 void ThreadTask::Done(bool f) {
     std::unique_lock<std::mutex> lock(mutex);
     done_ = f;
-    lock.unlock();
     cond.notify_all();
 }
 
 void ThreadTask::Wait()
 {
-    std::cout << "Wait.lock" << std::endl;
     std::unique_lock<std::mutex> lock(mutex);
     while (!done_) {
-        std::cout << "Wait.cond.wait" << std::endl;
         cond.wait(lock);
     }
 }

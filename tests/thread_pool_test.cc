@@ -18,10 +18,8 @@ struct MutexData {
     MutexData(int * a) : a(a) { }
 
     void Inc() {
-        std::cout << "Lock a" << std::endl;
         std::lock_guard<std::mutex> lock(mutex);
         *a = *a + 1;
-        std::cout << "Unlock a" << std::endl;
     }
 };
 
@@ -37,9 +35,6 @@ void parent_a(ThreadTask *task, void * data);
 
 
 void sub_a(ThreadTask *task, void * data) {
-    /*
-    std::unique_lock<std::mutex> lock(task->mutex);
-    */
     MutexData * d = (MutexData*) data;
     d->Inc();
 }
@@ -53,13 +48,8 @@ void parent_a(ThreadTask *task, void * data) {
     task->pool()->AddTask(&task1);
     task->pool()->AddTask(&task2);
 
-    std::cout << "Waiting sub 1" << std::endl;
     task1.Wait();
-    std::cout << "Done sub 1" << std::endl;
-
-    std::cout << "Waiting sub 2" << std::endl;
     task2.Wait();
-    std::cout << "Done sub 2" << std::endl;
 }
 
 void inc_a_500(ThreadTask *task, void * data) {
@@ -169,11 +159,8 @@ TEST(ThreadPoolTest, TestParentThreadTask) {
         MutexData data(&a);
         ThreadTask parent1(parent_a, &data);
 
-        std::cout << "===> Start parent " << x << std::endl;
         pool.AddTask(&parent1); // it's not locking the done mutex
-        std::cout << "===> Waiting parent 1" << x << std::endl;
         parent1.Wait();
-        std::cout << "===> Done parent 1" << x << std::endl;
 
         /*
         std::unique_lock<std::mutex> lock1(parent1.mutex);

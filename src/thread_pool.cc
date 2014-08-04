@@ -72,7 +72,6 @@ void ThreadPool::ExecuteTask()
     {
         std::unique_lock<std::mutex> lock(mutex_);
         started_workers_++;
-        lock.unlock();
         cv_.notify_all(); // try waking up a bunch of threads that are still waiting
     }
 
