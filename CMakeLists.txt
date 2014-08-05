@@ -38,11 +38,14 @@ else()
 endif()
 enable_testing()
 
-set(ENV{GTEST_ROOT} ${PROJECT_SOURCE_DIR}/gtest-1.7.0)
 # set(gtest_SOURCE_DIR gtest-1.7.0)
 # add_subdirectory(${gtest_SOURCE_DIR})
 # include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-add_subdirectory(gtest-1.7.0)
 add_subdirectory(src)
-add_subdirectory(tests)
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    set(ENV{GTEST_ROOT} ${PROJECT_SOURCE_DIR}/gtest-1.7.0)
+    add_subdirectory(gtest-1.7.0)
+    add_subdirectory(tests)
+endif()
 
