@@ -24,6 +24,9 @@ public:
     std::mutex mutex;
     std::condition_variable cond;
 
+    float total_ = 0;
+
+    float finished_ = 0;
 
     ThreadPool * pool_;
 
@@ -44,6 +47,22 @@ public:
     void Done(bool f = true);
 
     void Run();
+
+
+    // Set total progress for the progress report.
+    void SetTotalProgress(float total) {
+        total_ = total;
+    }
+
+    // Set finished report
+    void UpdateProgress(float finished) {
+        finished_ = finished;
+    }
+
+    // Return the progress report in float (finished_ / total_)
+    float ReadProgress() {
+        return (float)finished_ / (float)total_;
+    }
 
 private:
     void (*function_)(ThreadTask* task, void* data);
