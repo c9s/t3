@@ -1,5 +1,7 @@
-t3 - Lightweight Thread Pool for C++
+t3
 ======================================
+
+t3 is a lightweight thread pool for C++.
 
 
 ## ThreadPool
